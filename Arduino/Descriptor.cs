@@ -2,7 +2,7 @@
 
 namespace Argscope.Arduino
 {
-	class Descriptor
+	public class Descriptor
 	{
 		public string Description { get; private set; }
 		public string Port { get; private set; }

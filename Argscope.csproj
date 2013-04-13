@@ -88,7 +88,6 @@
     <Compile Include="Arduino\Device.cs" />
     <Compile Include="Arduino\Descriptor.cs" />
     <Compile Include="Arduino\Enumerator.cs" />
-    <Compile Include="MainController.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
