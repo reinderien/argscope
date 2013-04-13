@@ -13,6 +13,7 @@
   <PropertyGroup Label="Configuration">
     <ConfigurationType>Utility</ConfigurationType>
     <PlatformToolset>v110</PlatformToolset>
+    <IncludePath>C:\Program Files\arduino-1.0.4\hardware\arduino\variants\standard;C:\Program Files\arduino-1.0.4\hardware\arduino\cores\arduino;C:\Program Files\arduino-1.0.4\hardware\tools\avr\avr\include</IncludePath>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommand>"C:\Program Files\arduino-1.0.4\arduino.exe"</LocalDebuggerCommand>
     <LocalDebuggerCommandArguments>"$(ProjectDir)Embedded.ino"</LocalDebuggerCommandArguments>
