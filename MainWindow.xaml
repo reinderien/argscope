@@ -9,7 +9,7 @@
 
     <TabControl>
         <TabItem Name="MainTabs" Header="Devices">
-            <DataGrid DataContext="{Binding Devices}"
+            <DataGrid ItemsSource="{Binding Devices}"
                       AutoGenerateColumns="True">
             </DataGrid>
         </TabItem>

@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Management;
+using System.Windows;
 
 namespace Argscope.Arduino
 {
 	class Hotplug : IDisposable
 	{
 		ManagementEventWatcher arrival, removal;
-
-		public event Action<List<Descriptor>> Arrived, Removed;
 
 		public ObservableCollection<Descriptor> Devices { get; private set; }
 
@@ -24,7 +23,7 @@ namespace Argscope.Arduino
 
 		public Hotplug()
 		{
-			Devices = new ObservableCollection<Descriptor>();
+			Devices = new ObservableCollection<Descriptor>(Enumerator.AllDevices);
 
 			WqlEventQuery
 				arrivalQuery = new WqlEventQuery(
@@ -43,22 +42,25 @@ namespace Argscope.Arduino
 			removal.Start();
 		}
 
+		void Dispatch(Action a)
+		{
+			Application.Current.Dispatcher.Invoke(a);
+		}
+
 		void DeviceArrived(object sender, EventArrivedEventArgs e)
 		{
-			List<Descriptor> newDevices = Enumerator.AllDevices.ToList(),
-				arrivedDevices = newDevices.Except(Devices).ToList();
+			List<Descriptor> arrivedDevices =
+				Enumerator.AllDevices.Except(Devices).ToList();
 			if (arrivedDevices.Count > 0)
-				Arrived(arrivedDevices);
-			Devices.AddRange(arrivedDevices);
+				Dispatch(() => Devices.AddRange(arrivedDevices));
 		}
 
 		void DeviceRemoved(object sender, EventArrivedEventArgs e)
 		{
-			List<Descriptor> newDevices = Enumerator.AllDevices.ToList(),
-				removedDevices = Devices.Except(newDevices).ToList();
+			List<Descriptor> removedDevices =
+				Devices.Except(Enumerator.AllDevices).ToList();
 			if (removedDevices.Count > 0)
-				Removed(removedDevices);
-			Devices.RemoveRange(removedDevices);
+				Dispatch(() => Devices.RemoveRange(removedDevices));
 		}
 
 		public void Dispose()
