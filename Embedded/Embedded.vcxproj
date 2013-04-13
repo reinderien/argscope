@@ -13,24 +13,16 @@
   <PropertyGroup Label="Configuration">
     <ConfigurationType>Utility</ConfigurationType>
     <PlatformToolset>v110</PlatformToolset>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommand>"C:\Program Files\arduino-1.0.4\arduino.exe"</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments>"$(ProjectDir)Embedded.ino"</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ItemDefinitionGroup>
-    <PostBuildEvent>
-      <Message>Launching: "C:\Program Files\arduino-1.0.4\arduino.exe" "$(ProjectDir)Embedded.ino"</Message>
-      <Command>"C:\Program Files\arduino-1.0.4\arduino.exe" "$(ProjectDir)Embedded.ino"</Command>
-    </PostBuildEvent>
-    <BuildLog>
-      <Path />
-    </BuildLog>
-  </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="Embedded.ino" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-  </ImportGroup>
 </Project>
