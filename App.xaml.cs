@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Windows;
 
 namespace Argscope
@@ -7,24 +6,12 @@ namespace Argscope
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    partial class App : Application
     {
-		Arduino.Hotplug hotplug;
-
-		public App()
-		{
-			hotplug = new Arduino.Hotplug();
-			hotplug.Arrived += arrived =>
-			{
-			};
-			hotplug.Removed += removed =>
-			{
-			};
-		}
+		internal static readonly MainController MainController = new MainController();
 
 		protected override void OnExit(ExitEventArgs e)
 		{
-			hotplug.Dispose();
 		}
     }
 }
