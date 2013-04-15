@@ -7,12 +7,6 @@
 void setup()
 {
 	pinMode(A0, INPUT);
-	pinMode(A1, INPUT);
-	pinMode(A2, INPUT);
-	pinMode(A3, INPUT);
-	pinMode(A4, INPUT);
-	pinMode(A5, INPUT);
-
 	analogReference(INTERNAL);
 
 	Serial.begin(2000000);
@@ -20,4 +14,6 @@ void setup()
 
 void loop()
 {
+	uint16_t v = analogRead(0);
+	Serial.write(v);
 }

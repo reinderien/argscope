@@ -23,7 +23,7 @@ namespace Argscope.Arduino
 
 		public Hotplug()
 		{
-			Devices = new ObservableCollection<Descriptor>(Enumerator.AllDevices);
+			Devices = new ObservableCollection<Descriptor>();
 
 			WqlEventQuery
 				arrivalQuery = new WqlEventQuery(
@@ -42,9 +42,10 @@ namespace Argscope.Arduino
 			removal.Start();
 		}
 
-		void Dispatch(Action a)
+		public void Sync()
 		{
-			Application.Current.Dispatcher.Invoke(a);
+			Devices.Clear();
+			Devices.AddRange(Enumerator.AllDevices);
 		}
 
 		void DeviceArrived(object sender, EventArrivedEventArgs e)
@@ -52,7 +53,7 @@ namespace Argscope.Arduino
 			List<Descriptor> arrivedDevices =
 				Enumerator.AllDevices.Except(Devices).ToList();
 			if (arrivedDevices.Count > 0)
-				Dispatch(() => Devices.AddRange(arrivedDevices));
+				App.Invoke(() => Devices.AddRange(arrivedDevices));
 		}
 
 		void DeviceRemoved(object sender, EventArrivedEventArgs e)
@@ -60,7 +61,7 @@ namespace Argscope.Arduino
 			List<Descriptor> removedDevices =
 				Devices.Except(Enumerator.AllDevices).ToList();
 			if (removedDevices.Count > 0)
-				Dispatch(() => Devices.RemoveRange(removedDevices));
+				App.Invoke(() => Devices.RemoveRange(removedDevices));
 		}
 
 		public void Dispose()

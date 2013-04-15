@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Windows;
 
 namespace Argscope
@@ -19,6 +21,9 @@ namespace Argscope
 		public MainWindow()
 		{
 			InitializeComponent();
+
+			Devices.CollectionChanged += ScopeView.DevicesChanged;
+			hotplug.Sync();
 		}
 
 		private void Window_Closed(object sender, EventArgs e)

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 
 namespace Argscope
 {
@@ -7,5 +8,9 @@ namespace Argscope
 	/// </summary>
 	partial class App : Application
 	{
+		internal static void Invoke(Action a)
+		{
+			Application.Current.Dispatcher.Invoke(a);
+		}
 	}
 }

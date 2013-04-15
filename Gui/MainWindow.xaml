@@ -1,20 +1,47 @@
 ﻿<Window x:Class="Argscope.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:Argscope"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Argscope"
         Height="350"
         Width="525"
         Closed="Window_Closed">
 
-    <TabControl>
-        <TabItem Name="MainTabs" Header="Devices">
-            <DataGrid ItemsSource="{Binding Devices}"
-                      AutoGenerateColumns="True">
-            </DataGrid>
-        </TabItem>
+  <TabControl>
+    <TabItem Name="MainTabs" Header="Devices">
+      <DataGrid ItemsSource="{Binding Devices}"
+                      AutoGenerateColumns="False">
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="Port" Binding="{Binding Port}" />
+          <DataGridTextColumn Header="Name" Binding="{Binding Description}" />
+        </DataGrid.Columns>
+      </DataGrid>
+    </TabItem>
 
-        <TabItem Header="Scope">
-        </TabItem>
-    </TabControl>
+    <TabItem Header="Scope">
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="*" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <local:ScopeControl x:Name="ScopeView" Grid.Row="0" />
+        <Expander Grid.Row="1" Header="Settings" ExpandDirection="Up" >
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <GroupBox Grid.Column="0" Header="Vert">
+            </GroupBox>
+            <GroupBox Grid.Column="1" Header="Horz">
+            </GroupBox>
+            <GroupBox Grid.Column="2" Header="Trigger">
+            </GroupBox>
+          </Grid>
+        </Expander>
+      </Grid>
+    </TabItem>
+  </TabControl>
 </Window>
