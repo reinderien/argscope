@@ -45,11 +45,9 @@ namespace Argscope
 
 		void SyncPoints()
 		{
-			App.Invoke(() =>
-			{
-				TraceLine.Points.Clear();
-				TraceLine.Points.AddRange(points.Select(p => SecVoltsToPixel(p)));
-			});
+			TraceLine.Points.Clear();
+			TraceLine.Points.AddRange(points.Select(p => SecVoltsToPixel(p)));
+
 		}
 
 		private void Canvas_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -60,14 +58,14 @@ namespace Argscope
 		void ScopeTrigger()
 		{
 			points.Clear();
-			App.Invoke(() => TraceLine.Points.Clear());
+			TraceLine.Points.Clear();
 		}
 
 		void ScopeAdd(System.TimeSpan t, double v)
 		{
 			Point pnew = new Point(t.TotalSeconds, v);
 			points.Add(pnew);
-			App.Invoke(() => TraceLine.Points.Add(SecVoltsToPixel(pnew)));
+			TraceLine.Points.Add(SecVoltsToPixel(pnew));
 		}
 
 		public void DevicesChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -77,7 +75,7 @@ namespace Argscope
 				case NotifyCollectionChangedAction.Add:
 					if (Scope.Device == null)
 					{
-						Scope.Device = new Arduino.Device((Arduino.Descriptor)e.NewItems[0], 2000000);
+						Scope.Device = new Arduino.Device((Arduino.Descriptor)e.NewItems[0]);
 						Scope.CaptureAsync();
 					}
 					break;

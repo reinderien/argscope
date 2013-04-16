@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace Argscope
 {
@@ -124,13 +125,27 @@ namespace Argscope
 
 		public void Dispose()
 		{
+			StopCapture();
 			Device.Dispose();
+		}
+
+		void InvokeOrCancel(Action act)
+		{
+			DispatcherOperation dispatchOp = App.Current.Dispatcher.BeginInvoke(
+				new Action(() =>
+				{
+					if (!cancelToken.IsCancellationRequested)
+						act();
+				}), null);
+
+			try { dispatchOp.Task.Wait(cancelToken); }
+			catch (OperationCanceledException) { }
 		}
 
 		void AddRaw(TimeSpan t, UInt16 val)
 		{
 			if (Add != null)
-				Add(t, val * VertMaxVolts / VertMaxRaw);
+				InvokeOrCancel(() => Add(t, val * VertMaxVolts / VertMaxRaw));
 		}
 
 		bool ShouldTrigger(UInt16 v1, UInt16 v2)
@@ -162,14 +177,14 @@ namespace Argscope
 			{
 				// Wait for trigger
 
-				UInt16 vnew, vprev = Device.Reader.ReadUInt16();
+				UInt16 vnew, vprev = Device.ReadRaw();
 				DateTime tnew, tprev = DateTime.Now;
 				for (; ; )
 				{
 					if (cancelToken.IsCancellationRequested)
 						return;
 
-					vnew = Device.Reader.ReadUInt16();
+					vnew = Device.ReadRaw();
 					tnew = DateTime.Now;
 
 					if (ShouldTrigger(vprev, vnew))
@@ -185,7 +200,7 @@ namespace Argscope
 				// Capture data
 
 				if (Trigger != null)
-					Trigger();
+					InvokeOrCancel(Trigger);
 
 				while ((tnew - tprev).TotalSeconds < 1 / RefreshRate)
 				{
@@ -199,7 +214,7 @@ namespace Argscope
 						break;
 					}
 
-					vnew = Device.Reader.ReadUInt16();
+					vnew = Device.ReadRaw();
 					tnew = DateTime.Now;
 					AddRaw(tnew - tprev, vnew);
 				}

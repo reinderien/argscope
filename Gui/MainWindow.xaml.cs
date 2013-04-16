@@ -29,6 +29,7 @@ namespace Argscope
 		private void Window_Closed(object sender, EventArgs e)
 		{
 			hotplug.Dispose();
+			ScopeView.Dispose();
 		}
 	}
 }

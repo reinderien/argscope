@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.IO.Ports;
+using System.Threading;
 
 namespace Argscope.Arduino
 {
@@ -8,8 +9,12 @@ namespace Argscope.Arduino
 	{
 		SerialPort port;
 		readonly public Descriptor Descriptor;
+		readonly BinaryReader reader;
+		readonly BinaryWriter writer;
+		const byte request = (byte)'R',
+			ready = (byte)'G';
 
-		readonly public BinaryReader Reader;
+		public Device(Descriptor descriptor) : this(descriptor, 2000000) { }
 
 		public Device(Descriptor descriptor, int baudRate)
 		{
@@ -20,21 +25,45 @@ namespace Argscope.Arduino
 				baudRate: baudRate,
 				parity: Parity.None,
 				dataBits: 8,
-				stopBits: StopBits.One)
-			{
-				ReadTimeout = 1000
-			};
-			port.Open();
+				stopBits: StopBits.One);
 
-			Reader = new BinaryReader(port.BaseStream);
+			port.ErrorReceived += (s, e) =>
+			{
+				throw new ApplicationException(string.Format(
+					"Serial error: {0}", e.EventType));
+			};
+
+			port.DtrEnable = false;
+			port.Open();
+			Thread.Sleep(50);
+			port.DtrEnable = true;
+
+			reader = new BinaryReader(port.BaseStream);
+			writer = new BinaryWriter(port.BaseStream);
+
+			port.ReadTimeout = 5000;
+
+			byte r;
+			do r = reader.ReadByte();
+			while (r != ready);
+
+			port.ReadTimeout = 500;
 		}
 
 		public void Dispose()
 		{
-			Reader.Close();
-			Reader.Dispose();
+			reader.Close();
+			reader.Dispose();
+			writer.Close();
+			writer.Dispose();
 			port.Close();
 			port.Dispose();
+		}
+
+		public UInt16 ReadRaw()
+		{
+			writer.Write(request);
+			return reader.ReadUInt16();
 		}
 	}
 }

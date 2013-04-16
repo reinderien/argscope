@@ -10,10 +10,17 @@ void setup()
 	analogReference(INTERNAL);
 
 	Serial.begin(2000000);
+	Serial.write('G');
 }
 
-void loop()
+void loop() { }
+
+void serialEvent()
 {
-	uint16_t v = analogRead(0);
-	Serial.write(v);
+	if (Serial.read() == 'R')
+	{
+		uint16_t v = analogRead(0);
+		Serial.write(v);
+		Serial.write(v >> 8);
+	}
 }

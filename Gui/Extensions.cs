@@ -10,8 +10,9 @@ namespace Argscope
 	{
 		public static void AddRange<T>(this ICollection<T> coll, IEnumerable<T> toadd)
 		{
-			foreach (T t in toadd)
-				coll.Add(t);
+			lock(coll)
+				foreach (T t in toadd)
+					coll.Add(t);
 		}
 	}
 }
