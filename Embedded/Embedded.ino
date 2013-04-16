@@ -7,7 +7,7 @@
 void setup()
 {
 	pinMode(A0, INPUT);
-	analogReference(INTERNAL);
+	analogReference(DEFAULT);
 
 	Serial.begin(2000000);
 	Serial.write('G');

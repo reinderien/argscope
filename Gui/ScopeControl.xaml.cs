@@ -39,7 +39,7 @@ namespace Argscope
 		Point SecVoltsToPixel(Point p)
 		{
 			return new Point(
-				p.X * ScopeCanvas.ActualWidth / Scope.HorzWindowEffective.TotalSeconds,
+				p.X * ScopeCanvas.ActualWidth / Scope.HorzWindow.TotalSeconds,
 				(1 - p.Y / Scope.VertMaxVolts) * ScopeCanvas.ActualHeight);
 		}
 

@@ -33,7 +33,7 @@ namespace Argscope
 
 		public Arduino.Device Device { get; set; }
 
-		VertMaxEnum vertMax = VertMaxEnum.V1p1;
+		VertMaxEnum vertMax = VertMaxEnum.V5p0;
 		public VertMaxEnum VertMax
 		{
 			get { return vertMax; }
@@ -53,7 +53,7 @@ namespace Argscope
 			}
 		}
 
-		TimeSpan horzWindow = TimeSpan.FromMilliseconds(100);
+		TimeSpan horzWindow = TimeSpan.FromMilliseconds(500);
 		public TimeSpan HorzWindow
 		{
 			get { return horzWindow; }
@@ -74,7 +74,7 @@ namespace Argscope
 			}
 		}*/
 
-		TriggerDirEnum triggerDir = TriggerDirEnum.Continuous;
+		TriggerDirEnum triggerDir = TriggerDirEnum.Negative;
 		public TriggerDirEnum TriggerDir
 		{
 			get { return triggerDir; }
@@ -92,9 +92,9 @@ namespace Argscope
 			}
 		}
 
-		UInt16 triggerLevelRaw = VertMaxRaw / 2;
+		UInt16 triggerLevelRaw = VertMaxRaw  * 4 / 10;
 
-		double refreshRate = 5;
+		double refreshRate = 20;
 		double RefreshRate
 		{
 			get { return refreshRate; }
@@ -103,16 +103,6 @@ namespace Argscope
 				if (refreshRate < 0.1 || refreshRate > 1000)
 					throw new ArgumentOutOfRangeException();
 				refreshRate = value;
-			}
-		}
-
-		public TimeSpan HorzWindowEffective
-		{
-			get
-			{
-				return TimeSpan.FromSeconds(Math.Min(
-					horzWindow.TotalSeconds,
-					1 / RefreshRate));
 			}
 		}
 
@@ -194,23 +184,32 @@ namespace Argscope
 					tprev = tnew;
 				}
 
+				if (Trigger != null)
+					InvokeOrCancel(Trigger);
+
 				AddRaw(TimeSpan.Zero, vprev);
 				AddRaw(tnew - tprev, vnew);
 
 				// Capture data
 
-				if (Trigger != null)
-					InvokeOrCancel(Trigger);
+				/*
+				 * Slow:
+				 * 1/refresh  ----------- Keep capturing
+				 * horzwindow -----------------------------
+				 * 
+				 * Fast:      
+				 * 1/refresh  -----------
+				 * horzwindow --- Sleep
+				 */
 
-				while ((tnew - tprev).TotalSeconds < 1 / RefreshRate)
+				while (!cancelToken.IsCancellationRequested)
 				{
-					if (cancelToken.IsCancellationRequested)
-						return;
-
-					if (tnew - tprev >= HorzWindow)
+					TimeSpan delta = tnew - tprev;
+					if (delta >= HorzWindow)
 					{
-						Thread.Sleep(TimeSpan.FromSeconds(1 / RefreshRate) -
-							(tnew - tprev));
+						TimeSpan towait = TimeSpan.FromSeconds(1 / RefreshRate) - delta;
+						if (towait.TotalSeconds > 0)
+							Thread.Sleep(towait);
 						break;
 					}
 
